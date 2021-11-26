@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TodoModule } from './todo/todo.module';
@@ -7,15 +8,22 @@ import { TodoModule } from './todo/todo.module';
 
 @Module({
   imports: [
-      TypeOrmModule.forRoot({
-        type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: '',
-        database: 'test',
-        entities: [__dirname + '/**/*.entity{.ts,.js}'],
-        synchronize: true,
+    ConfigModule.forRoot({
+      isGlobal: true,
+    }),
+      TypeOrmModule.forRootAsync({
+        imports: [ConfigModule],
+        useFactory: (config: ConfigService) => ({
+          type: 'mysql',
+          host: config.get('DB_HOST'),
+          port: 3306,
+          username: config.get('DB_USER'),
+          password: config.get('DB_PASSWORD'),
+          database: config.get('DB_NAME'),
+          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          synchronize: true,
+        }),
+        inject: [ConfigService],
       }),
     TodoModule
   ],
