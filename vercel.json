@@ -1,0 +1,10 @@
+{
+    "name": "todo-app-be",
+    "builds": [
+        {
+            "src": "main.ts",
+            "use": "@now/node-server"
+        }
+    ],
+    "version": 2
+}
